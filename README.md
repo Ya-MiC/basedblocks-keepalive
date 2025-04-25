@@ -132,7 +132,7 @@ setInterval(() => {
 
 ---
 
-## 🇬🇧 English Version (For Translation) 📝
+## 🇬🇧 English Version  📝 🇬🇧
 
 **Project Name**: basedblocks-keepalive  
 **Slogan**: Keep mining alive, uninterrupted!✨
