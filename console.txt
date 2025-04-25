@@ -1,0 +1,69 @@
+// —— 全局变量
+let lastAttempt = null;
+let lastValidHashTime = 0;
+
+// —— 拦截并扩展 console.log
+(function() {
+  const origLog = console.log;
+  console.log = function(...args) {
+    const msg = args[0];
+    if (typeof msg === 'string' &&
+       (msg.includes("Valid hash found:")  // 英文日志
+     || msg.includes("找到有效的哈希值：") // 中文日志
+       )) {
+      console.warn("⛏️ 有效哈希检测到，触发重启...");
+      lastValidHashTime = Date.now();
+      restartMining();
+    }
+    origLog.apply(console, args);
+  };
+})();
+
+// —— 获取尝试次数的元素（英/中两种场景）
+function getAttemptDiv() {
+  return Array.from(document.querySelectorAll('div.pixel-text')).find(el =>
+    /attempt:/.test(el.textContent) || /尝试：/.test(el.textContent)
+  );
+}
+
+// —— 获取停止/开始按钮（英/中两种场景）
+function getStopButton() {
+  return Array.from(document.querySelectorAll('button')).find(btn =>
+    btn.textContent.includes('STOP MINING')
+     || btn.textContent.includes('停止挖矿')
+  );
+}
+function getStartButton() {
+  return Array.from(document.querySelectorAll('button')).find(btn =>
+    btn.textContent.includes('START MINING')
+     || btn.textContent.includes('开始挖矿')
+  );
+}
+
+// —— 重启流程：先点“停止”，再延迟 1 秒点“开始”
+function restartMining() {
+  const stopBtn = getStopButton();
+  const startBtn = getStartButton();
+  if (stopBtn) stopBtn.click();
+  setTimeout(() => {
+    if (startBtn) startBtn.click();
+  }, 1000);
+}
+
+// —— 定时检查“尝试次数”是否卡住
+setInterval(() => {
+  const el = getAttemptDiv();
+  if (!el) return;
+  const m = el.textContent.match(/(?:attempt:|尝试：)\s*(\d+)/);
+  if (!m) return;
+  const currentAttempt = parseInt(m[1], 10);
+
+  // 如果次数不变且距上次有效哈希超 5 秒，则重启
+  if (lastAttempt !== null
+      && currentAttempt === lastAttempt
+      && Date.now() - lastValidHashTime > 5000) {
+    console.warn("📷 尝试卡住，重启挖矿...");
+    restartMining();
+  }
+  lastAttempt = currentAttempt;
+}, 1000);
