@@ -32,7 +32,7 @@
 ### 🪟 Windows + Chrome 🎯
 
 1. 在 Chrome 中访问 `https://basedblocks.xyz`。🌐  
-2. 按 `F12` 打开 **开发者工具**，切换到 **Console** 标签页。🛠️  
+2. 按 `F12` 打开 **开发者工具**，切换到 **Console** 标签页。🛠️ ( `CTRL+SHIFT+J` `inspect（检查)` 如果F12无效)
 3. **点击面板空白处**（帮助定位输入行），切换到英文输入法，输入：  
    ```
    allow pasting
